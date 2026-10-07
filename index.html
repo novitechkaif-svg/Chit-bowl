@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f7f6ef">
+<title>Chit Bowl — Leave it to luck.</title>
+<style>
+:root {
+  --page: #f7f6ef;
+  --paper: #fffef9;
+  --ink: #243e33;
+  --muted: #7a8175;
+  --green: #315b43;
+  --green-dark: #234632;
+  --sage: #e9efdf;
+  --line: #e2e5d9;
+  --orange: #c9774d;
+  --orange-light: #f6e8d8;
+  --radius: 24px;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: .2;
+  background-image: radial-gradient(#949e83 .65px, transparent .65px);
+  background-size: 7px 7px;
+  z-index: -1;
+}
+button, textarea { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+button:not(:disabled) { cursor: pointer; }
+button:disabled { cursor: default; }
+button, a, textarea { outline-offset: 4px; }
+:focus-visible { outline: 3px solid #c78b57; }
+button { color: inherit; }
+.icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.shell { width: min(1120px, calc(100% - 64px)); margin: 0 auto; }
+header {
+  height: 94px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: center; gap: 11px; }
+.brand-mark {
+  width: 43px;
+  height: 43px;
+  background: var(--green);
+  color: #fffdf0;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  transform: rotate(-5deg);
+}
+.brand-mark .icon { width: 29px; height: 29px; stroke-width: 1.4; }
+.brand-name { font-size: 23px; font-weight: 750; letter-spacing: -1px; }
+.brand-name span { color: var(--orange); }
+.header-tools { display: flex; align-items: center; gap: 12px; }
+.fair-note { font-size: 12px; color: var(--muted); margin-right: 12px; display: flex; align-items: center; gap: 7px; }
+.fair-note::before { content: ""; width: 6px; height: 6px; background: #709765; border-radius: 50%; }
+.icon-button {
+  width: 39px;
+  height: 39px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+  display: inline-grid;
+  place-items: center;
+  transition: background .2s, transform .2s;
+}
+.icon-button:hover { background: #e9eddf; transform: translateY(-1px); }
+.help-button {
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 0 10px 8px;
+  font-size: 13px;
+}
+.help-button .icon { width: 17px; height: 17px; }
+.hero { text-align: center; padding: 36px 0 31px; }
+.eyebrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  color: var(--orange);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+}
+.eyebrow .icon { width: 15px; height: 15px; }
+h1 {
+  margin: 11px 0 12px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(36px, 4.6vw, 58px);
+  font-weight: 400;
+  letter-spacing: -2.3px;
+  line-height: 1.15;
+}
+h1 em { color: var(--orange); font-weight: 400; }
+.hero p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.7; }
+.game-layout { display: grid; grid-template-columns: 1.25fr 1fr; gap: 24px; }
+.stage {
+  background: var(--sage);
+  border: 1px solid #dce5d1;
+  border-radius: var(--radius);
+  height: 552px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+.stage::before {
+  content: "";
+  position: absolute;
+  width: 410px;
+  height: 410px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #f7f9ed 0%, #f3f7e9aa 45%, transparent 70%);
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.stage-header {
+  padding: 23px 25px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  gap: 10px;
+}
+.stage-label { display: flex; align-items: center; gap: 7px; font-size: 10px; font-weight: 750; letter-spacing: 1.8px; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: #729567; }
+.count-badge {
+  background: #f8fbf0bd;
+  border: 1px solid #dbe3d0;
+  padding: 6px 10px;
+  border-radius: 30px;
+  font-size: 11px;
+  color: #617358;
+  white-space: nowrap;
+}
+.bowl-world { position: relative; flex: 1; min-height: 0; margin: 0 5px; }
+.bowl-trigger { width: 100%; height: 100%; border: 0; background: transparent; padding: 0; border-radius: 20px; display: block; }
+.bowl-trigger:focus-visible { outline-offset: -10px; }
+.bowl-art { width: 100%; height: 100%; overflow: visible; transition: transform .5s; }
+.bowl-trigger:not(:disabled):hover .bowl-art { transform: translateY(-3px); }
+.bowl-art .bowl-glint { opacity: .56; transition: opacity .2s; }
+.bowl-trigger:hover .bowl-glint { opacity: .85; }
+.scene-scribble { font-family: Georgia, serif; font-style: italic; fill: #829474; font-size: 16px; }
+.scene-star { stroke: #98ac85; fill: none; stroke-width: 1.5; stroke-linejoin: round; }
+.stage.is-mixing .bowl-art { animation: bowl-wiggle .28s ease-in-out infinite; transform-origin: 50% 85%; }
+.stage.is-mixing .status-dot { animation: pulse .7s infinite; background: var(--orange); }
+.stage.is-revealed .bowl-art { transform: translateY(15px) scale(.95); }
+.stage.is-revealed .scene-decoration { opacity: .25; }
+.stage-footer { padding: 0 32px 24px; position: relative; z-index: 3; }
+.bowl-message { font-size: 12px; text-align: center; color: #7b896f; margin: 0 0 14px; min-height: 18px; }
+.primary-button {
+  width: 100%;
+  border: 1px solid var(--green);
+  border-radius: 13px;
+  background: var(--green);
+  color: #fffdf3;
+  height: 53px;
+  font-weight: 650;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 0 #234330;
+  transition: background .2s, transform .15s, box-shadow .15s;
+}
+.primary-button:not(:disabled):hover { background: var(--green-dark); transform: translateY(-1px); box-shadow: 0 5px 0 #1e3929; }
+.primary-button:not(:disabled):active { transform: translateY(3px); box-shadow: 0 1px 0 #234330; }
+.primary-button:disabled { background: #688064; border-color: #688064; box-shadow: 0 4px 0 #50684c; }
+.primary-button:disabled .icon { animation: spin 1.3s linear infinite; }
+.progress-row { display: flex; justify-content: space-between; align-items: center; margin: 18px 0 8px; font-size: 10px; color: #7b8b6f; gap: 8px; }
+.progress-row span:last-child { display: flex; gap: 4px; align-items: center; }
+.progress-row .icon { width: 12px; height: 12px; }
+.progress-track { height: 3px; background: #d8e2cc; border-radius: 3px; overflow: hidden; }
+.progress-fill { background: #839d73; height: 100%; width: 0; transition: width .45s ease; }
+.winner-card {
+  position: absolute;
+  z-index: 4;
+  width: min(290px, 78%);
+  left: 50%;
+  top: 22px;
+  padding: 22px 20px 20px;
+  background: #fffdf2;
+  border: 1px solid #dfd8bd;
+  border-radius: 5px 5px 16px 5px;
+  text-align: center;
+  box-shadow: 0 16px 35px #42603a24, 3px 4px 0 #e8e4d2;
+  transform: translateX(-50%) rotate(-3deg);
+  animation: paper-reveal .6s cubic-bezier(.2,.8,.2,1) both;
+  pointer-events: none;
+}
+.winner-card::before {
+  content: "";
+  position: absolute;
+  width: 68px;
+  height: 22px;
+  background: #d6b87b66;
+  top: -11px;
+  left: calc(50% - 34px);
+  transform: rotate(5deg);
+  clip-path: polygon(2% 0, 98% 3%, 96% 22%, 100% 40%, 96% 61%, 100% 83%, 97% 100%, 0 96%, 4% 75%, 0 48%, 3% 21%);
+}
+.winner-eyebrow { color: var(--orange); font-size: 9px; font-weight: 750; letter-spacing: 2px; text-transform: uppercase; }
+.winner-name { margin: 10px 0; font-family: Georgia, serif; font-size: 35px; line-height: 1.15; letter-spacing: -.8px; overflow-wrap: anywhere; }
+.winner-caption { color: #8c8b76; font-size: 10px; margin: 0; line-height: 1.5; }
+.winner-sparkle { position: absolute; right: -16px; top: 23px; color: #bd8d43; width: 29px; height: 29px; fill: #f9e7b6; stroke-width: 1.3; }
+.roster-card {
+  background: var(--paper);
+  border: 1px solid #e6e5db;
+  border-radius: var(--radius);
+  height: 552px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 6px 18px #3b402003;
+  min-width: 0;
+}
+.roster-heading { display: flex; align-items: center; justify-content: space-between; }
+h2 { margin: 0; font-size: 22px; font-weight: 650; letter-spacing: -.7px; }
+.people-icon { color: #8a977c; background: #f1f3e9; border-radius: 11px; display: grid; place-items: center; width: 35px; height: 35px; }
+.roster-subtitle { margin: 5px 0 21px; font-size: 12px; color: var(--muted); }
+.input-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.input-label label { font-size: 10px; font-weight: 750; letter-spacing: 1.3px; }
+.input-label span { color: #9a9e90; font-size: 10px; }
+.input-row {
+  display: flex;
+  gap: 7px;
+  padding: 5px;
+  background: #fffefb;
+  border: 1px solid #dcded2;
+  border-radius: 12px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.input-row:focus-within { border-color: #8b9c79; box-shadow: 0 0 0 3px #8b9c7914; }
+textarea {
+  width: 100%;
+  height: 41px;
+  min-width: 0;
+  padding: 11px 7px;
+  border: 0;
+  outline: none !important;
+  color: var(--ink);
+  background: transparent;
+  resize: none;
+  font-size: 12px;
+  line-height: 19px;
+  scrollbar-width: thin;
+}
+textarea::placeholder { color: #a1a293; }
+.add-button {
+  flex-shrink: 0;
+  width: 42px;
+  height: 41px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: var(--orange-light);
+  color: #ad643d;
+  transition: background .2s, transform .15s;
+}
+.add-button:hover { background: #efdbc2; }
+.add-button:active { transform: scale(.94); }
+.add-button:disabled { opacity: .45; }
+.input-hint { margin: 7px 0 0; font-size: 10px; color: #999d8f; }
+.tabs { display: flex; gap: 24px; border-bottom: 1px solid var(--line); margin-top: 21px; }
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  position: relative;
+  border: 0;
+  background: none;
+  padding: 0 0 11px;
+  font-size: 12px;
+  color: #999e90;
+  font-weight: 550;
+}
+.tab[aria-selected="true"] { color: var(--green); }
+.tab[aria-selected="true"]::after { content: ""; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; border-radius: 2px; background: var(--green); }
+.tab-count { display: inline-grid; place-items: center; min-width: 19px; height: 19px; border-radius: 5px; background: #f1f2e9; font-size: 10px; padding: 0 4px; }
+.tab[aria-selected="true"] .tab-count { background: #e8eee0; }
+.names-panel { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #d8ddce transparent; margin-top: 10px; }
+.name-list { list-style: none; margin: 0; padding: 0; }
+.name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 45px;
+  margin-bottom: 5px;
+  padding: 3px 7px 3px 10px;
+  background: #f5f6ee;
+  border: 1px solid #edf0e5;
+  border-radius: 9px;
+  animation: row-in .25s ease both;
+}
+.name-number { flex-shrink: 0; width: 23px; font-size: 10px; color: #8e9c83; font-variant-numeric: tabular-nums; }
+.person-name { font-size: 13px; font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.remove-button { width: 33px; height: 33px; flex-shrink: 0; border: 0; background: transparent; display: grid; place-items: center; border-radius: 7px; color: #a4ae99; }
+.remove-button .icon { width: 14px; height: 14px; }
+.remove-button:hover { background: #f2e4d8; color: #b36d4c; }
+.remove-button:disabled { opacity: .3; }
+.name-row.picked-row { background: #fbf3e8; border-color: #f4eadd; }
+.picked-row .name-number { color: var(--orange); }
+.pick-check { width: 33px; height: 33px; display: grid; place-items: center; color: #b9936b; }
+.pick-check .icon { width: 15px; height: 15px; }
+.empty-state { height: 100%; min-height: 170px; padding: 13px 12px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.empty-illustration { width: 61px; height: 61px; background: #f1f2e8; border-radius: 50%; display: grid; place-items: center; margin-bottom: 12px; }
+.empty-illustration .icon { width: 30px; height: 30px; color: #97a48a; stroke-width: 1.3; transform: rotate(-9deg); }
+.empty-state strong { font-size: 12px; font-weight: 550; color: #7a8570; }
+.empty-state p { font-size: 11px; color: #a0a492; line-height: 1.6; max-width: 240px; margin: 6px 0 0; }
+.roster-footer { margin-top: 12px; padding-top: 13px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 8px; align-items: center; min-height: 39px; }
+.text-button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; border: none; background: none; padding: 4px 0; font-size: 11px; color: #7f8c72; min-height: 26px; }
+.text-button .icon { width: 14px; height: 14px; }
+.text-button:hover:not(:disabled) { color: var(--orange); }
+.text-button:disabled { opacity: .4; }
+.sample-button { color: var(--orange); }
+.footer-actions { display: flex; gap: 12px; align-items: center; }
+.mobile-draw { display: none; }
+.bottom-note { display: flex; justify-content: center; align-items: center; gap: 7px; text-align: center; color: #93998b; font-size: 11px; padding: 23px 0 29px; }
+.bottom-note .icon { width: 14px; height: 14px; }
+.bottom-note .divider { margin: 0 5px; color: #c6cbbd; }
+dialog {
+  width: min(430px, calc(100% - 34px));
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid #e5e5d5;
+  padding: 29px;
+  border-radius: 23px;
+  box-shadow: 0 25px 100px #203e3340;
+}
+dialog::backdrop { background: #1d352b66; backdrop-filter: blur(5px); }
+.dialog-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 22px; }
+.dialog-top .icon-button { width: 32px; height: 32px; }
+.dialog-top .icon-button .icon { width: 15px; height: 15px; }
+.dialog-top h2 { font-family: Georgia, serif; font-weight: 400; font-size: 27px; }
+.instructions { list-style: none; padding: 0; margin: 0 0 25px; }
+.instructions li { display: flex; align-items: flex-start; gap: 13px; margin: 21px 0; }
+.step-number { width: 30px; height: 30px; flex-shrink: 0; display: grid; place-items: center; border-radius: 9px; background: var(--sage); font-family: Georgia, serif; }
+.instructions strong { display: block; font-size: 13px; margin: 0 0 5px; }
+.instructions p, .dialog-copy { color: var(--muted); font-size: 12px; line-height: 1.75; margin: 0; }
+.dialog-footnote { margin: 20px 0 0; text-align: center; color: #949b89; font-size: 10px; line-height: 1.7; }
+kbd { font: inherit; padding: 2px 5px; background: #edf0e4; border: 1px solid #e0e5d6; border-radius: 4px; }
+.confirm-actions { display: flex; gap: 12px; margin-top: 24px; }
+.secondary-button { border: 1px solid var(--line); background: transparent; border-radius: 12px; padding: 12px 20px; font-size: 13px; }
+.confirm-actions .primary-button { height: 44px; box-shadow: none; background: #b67251; border-color: #b67251; font-size: 13px; }
+#confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; }
+.toast {
+  position: fixed;
+  z-index: 50;
+  bottom: 26px;
+  left: 50%;
+  transform: translate(-50%, 20px);
+  background: #2d493a;
+  color: #fffef0;
+  border: 1px solid #ffffff19;
+  border-radius: 12px;
+  padding: 13px 19px;
+  box-shadow: 0 8px 30px #243e3322;
+  font-size: 12px;
+  max-width: calc(100% - 36px);
+  width: max-content;
+  opacity: 0;
+  transition: transform .25s, opacity .25s;
+  pointer-events: none;
+  text-align: center;
+  line-height: 1.5;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+@keyframes bowl-wiggle { 0%,100% { transform: rotate(-1.4deg) translateX(-2px); } 50% { transform: rotate(1.4deg) translateX(2px); } }
+@keyframes paper-reveal { from { opacity: 0; transform: translate(-50%, 100px) rotate(-15deg) scale(.55); } to { opacity: 1; transform: translate(-50%, 0) rotate(-3deg) scale(1); } }
+@keyframes row-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 50% { opacity: .25; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (min-width: 1450px) {
+  .shell { width: 1160px; }
+  .hero { padding-top: 46px; padding-bottom: 39px; }
+  .stage, .roster-card { height: 576px; }
+}
+@media (max-width: 800px) {
+  .shell { width: calc(100% - 36px); }
+  .game-layout { gap: 16px; grid-template-columns: 1.1fr 1fr; }
+  .roster-card { padding: 20px; }
+  .stage-header { padding-left: 19px; padding-right: 19px; }
+  .stage-footer { padding-left: 23px; padding-right: 23px; }
+  .fair-note { display: none; }
+}
+@media (max-width: 650px) {
+  .shell { width: min(470px, calc(100% - 32px)); }
+  header { height: 77px; }
+  .brand-name { font-size: 21px; }
+  .brand-mark { width: 37px; height: 37px; border-radius: 11px; }
+  .brand-mark .icon { width: 25px; height: 25px; }
+  .header-tools { gap: 9px; }
+  .help-button span { display: none; }
+  .help-button { width: 37px; height: 37px; padding: 0; justify-content: center; border: 1px solid var(--line); border-radius: 50%; }
+  .help-button .icon { width: 19px; height: 19px; }
+  .icon-button { width: 37px; height: 37px; }
+  .hero { padding: 28px 0 25px; }
+  .eyebrow { font-size: 9px; letter-spacing: 2px; }
+  h1 { font-size: clamp(33px, 8.2vw, 43px); letter-spacing: -1.6px; margin-top: 12px; }
+  .hero p { font-size: 12px; max-width: 285px; margin: 0 auto; line-height: 1.7; }
+  .game-layout { display: flex; flex-direction: column; gap: 18px; }
+  .roster-card { order: 0; height: 405px; padding: 21px; border-radius: 20px; }
+  .roster-subtitle { margin-bottom: 16px; }
+  .tabs { margin-top: 17px; }
+  .names-panel { min-height: 103px; }
+  .empty-state { min-height: 103px; padding: 12px 4px 8px; }
+  .empty-illustration { display: none; }
+  .empty-state p { font-size: 10px; margin-top: 5px; }
+  .stage { order: 1; height: 482px; border-radius: 20px; scroll-margin-top: 16px; }
+  .stage-header { padding-top: 20px; }
+  .stage-footer { padding: 0 24px 23px; }
+  .winner-card { width: 245px; top: 19px; padding: 20px 16px 18px; }
+  .winner-name { font-size: 31px; }
+  .mobile-draw { display: inline-flex; }
+  .bottom-note { font-size: 10px; flex-wrap: wrap; gap: 5px; max-width: 310px; margin: 0 auto; padding: 22px 0; }
+  .bottom-note .divider { display: none; }
+  .privacy-text { width: 100%; }
+  textarea { font-size: 16px; padding-top: 10px; padding-left: 6px; }
+  textarea::placeholder { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <symbol id="i-bowl" viewBox="0 0 32 32"><path d="M4 16c1 9 5 12 12 12s11-3 12-12"/><ellipse cx="16" cy="16" rx="12" ry="3"/><path d="m10 13-1-8 8-1 1 9m1-5 4-2 3 7M12 8l3-.5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="m11 5-5 4H3v6h3l5 4zM15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-mute" viewBox="0 0 24 24"><path d="m11 5-5 4H3v6h3l5 4zM16 9l5 6m-5 0 5-6"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.7 9a2.3 2.3 0 1 1 4.3 1.1c-.8 1-2 1.1-2 2.9M12 16.5h.01"/></symbol>
+    <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M3 6h3c4 0 7 12 11 12h4m-4-4 4 4-4 4M3 18h3c1.4 0 2.7-1.5 4-3.5M14 9.5C15 7.5 16 6 18 6h3m-4-4 4 4-4 4"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/></symbol>
+    <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6m2 3a5 5 0 0 1 3 4v2"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v5m4-5v5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v16m-6-6 6 6 6-6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-paper" viewBox="0 0 24 24"><path d="M5 3h10l5 5v13H5zM15 3v6h5M9 12h7m-7 4h5"/></symbol>
+    <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M20 8a8 8 0 1 0 .5 7M20 3v5h-5"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 8V3H3v13h5"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/></symbol>
+  </defs>
+</svg>
+
+<div class="shell">
+  <header>
+    <div class="brand" aria-label="Chit Bowl">
+      <div class="brand-mark"><svg class="icon"><use href="#i-bowl"/></svg></div>
+      <div class="brand-name">chit bowl<span>.</span></div>
+    </div>
+    <div class="header-tools">
+      <span class="fair-note">A fair pick, every time</span>
+      <button class="icon-button" id="soundButton" aria-label="Turn sound off" aria-pressed="true" title="Turn sound off">
+        <svg class="icon"><use id="soundIcon" href="#i-sound"/></svg>
+      </button>
+      <button class="help-button" id="helpButton"><svg class="icon"><use href="#i-help"/></svg><span>How to play</span></button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow"><svg class="icon"><use href="#i-star"/></svg> SMALL CHITS. BIG POSSIBILITIES.</div>
+      <h1>Leave it to the <em>bowl.</em></h1>
+      <p>Add your people, give it a swirl, and let a little luck decide.</p>
+    </section>
+
+    <div class="game-layout">
+      <section class="stage" id="stage" aria-label="The lucky bowl">
+        <div class="stage-header">
+          <span class="stage-label"><span class="status-dot"></span><span id="stageLabel">YOUR LUCKY BOWL</span></span>
+          <span class="count-badge" id="bowlCount">0 chits inside</span>
+        </div>
+
+        <div class="bowl-world">
+          <button class="bowl-trigger" id="bowlTrigger" aria-label="Add names to the bowl">
+            <svg class="bowl-art" viewBox="0 0 600 380" role="img" aria-label="A glass bowl filled with folded paper chits">
+              <defs>
+                <linearGradient id="glassBody" x1="0" y1="0" x2=".9" y2="1">
+                  <stop offset="0" stop-color="#c1d4af" stop-opacity=".35"/>
+                  <stop offset=".48" stop-color="#a1bd90" stop-opacity=".38"/>
+                  <stop offset="1" stop-color="#709364" stop-opacity=".67"/>
+                </linearGradient>
+                <linearGradient id="glassFront" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#e1edd5" stop-opacity=".07"/>
+                  <stop offset=".6" stop-color="#96b984" stop-opacity=".2"/>
+                  <stop offset="1" stop-color="#789c68" stop-opacity=".45"/>
+                </linearGradient>
+                <linearGradient id="rimGradient" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#f7fbea"/>
+                  <stop offset=".5" stop-color="#b1c6a2"/>
+                  <stop offset="1" stop-color="#eef5df"/>
+                </linearGradient>
+                <radialGradient id="bowlShadow">
+                  <stop offset="0" stop-color="#6d8555" stop-opacity=".22"/>
+                  <stop offset="1" stop-color="#6d8555" stop-opacity="0"/>
+                </radialGradient>
+                <filter id="paperShadow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feDropShadow dx="0" dy="3" stdDeviation="2" flood-color="#42633c" flood-opacity=".18"/>
+                </filter>
+                <clipPath id="bowlClip">
+                  <path d="M110 174C110 141 195 114 300 114S490 141 490 174C484 277 433 347 300 347S116 277 110 174Z"/>
+                </clipPath>
+              </defs>
+              <g class="scene-decoration">
+                <circle cx="300" cy="206" r="160" fill="none" stroke="#cfdbbf" stroke-width="1" stroke-dasharray="3 8" opacity=".75"/>
+                <path class="scene-star" d="m136 79 3 10 10 3-10 3-3 10-3-10-10-3 10-3z"/>
+                <path class="scene-star" d="m458 257 2 7 7 2-7 2-2 7-2-7-7-2 7-2z"/>
+                <circle cx="108" cy="246" r="3" fill="#b0c29d"/>
+                <circle cx="466" cy="111" r="3" fill="#b0c29d"/>
+                <text x="354" y="57" class="scene-scribble" transform="rotate(8 354 57)">a little everyday magic</text>
+                <path d="M463 75q23 22 2 44m0-10 0 10 11-2" fill="none" stroke="#9aab87" stroke-width="1.3" stroke-linecap="round"/>
+              </g>
+              <ellipse cx="300" cy="354" rx="193" ry="22" fill="url(#bowlShadow)"/>
+              <ellipse cx="300" cy="174" rx="190" ry="60" fill="#b5cba5" fill-opacity=".34" stroke="#a4bc95" stroke-width="1.5"/>
+              <ellipse cx="300" cy="174" rx="181" ry="53" fill="#d9e5cb" fill-opacity=".58"/>
+              <path d="M110 174C116 277 167 347 300 347S484 277 490 174C460 211 381 232 300 232S140 211 110 174Z" fill="url(#glassBody)" stroke="#8ba77a" stroke-opacity=".66" stroke-width="1.5"/>
+              <g clip-path="url(#bowlClip)" id="chits"></g>
+              <text id="emptyBowlText" x="300" y="261" text-anchor="middle" fill="#6e8d5b" opacity=".53" font-family="Georgia, serif" font-size="19" font-style="italic">room for everyone</text>
+              <path d="M110 174C116 277 167 347 300 347S484 277 490 174C460 211 381 232 300 232S140 211 110 174Z" fill="url(#glassFront)"/>
+              <path d="M127 197c8 49 26 82 48 99" fill="none" stroke="#f8ffec" stroke-width="12" stroke-linecap="round" class="bowl-glint"/>
+              <path d="M451 218c-7 30-17 50-27 62" fill="none" stroke="#f3fae8" stroke-width="5" stroke-linecap="round" opacity=".4"/>
+              <path d="M205 325q92 25 190-5" fill="none" stroke="#dce9cc" stroke-width="3" stroke-linecap="round" opacity=".47"/>
+              <ellipse cx="300" cy="174" rx="190" ry="60" fill="none" stroke="url(#rimGradient)" stroke-width="6"/>
+              <path d="M110 174c0 33 85 60 190 60s190-27 190-60" fill="none" stroke="#91ad7e" stroke-opacity=".66" stroke-width="1.2"/>
+              <path d="M131 153c37-24 101-36 169-36" fill="none" stroke="#f8ffed" stroke-width="3.5" stroke-linecap="round" opacity=".8"/>
+              <circle cx="300" cy="288" r="20" fill="#eef4de" fill-opacity=".38" stroke="#e4eed5" stroke-opacity=".53"/>
+              <path d="m300 276 3 9 9 3-9 3-3 9-3-9-9-3 9-3z" fill="none" stroke="#648450" stroke-opacity=".57" stroke-width="1.3"/>
+            </svg>
+          </button>
+
+          <div class="winner-card" id="winnerCard" hidden>
+            <svg class="icon winner-sparkle"><use href="#i-star"/></svg>
+            <div class="winner-eyebrow" id="winnerEyebrow">THE BOWL HAS SPOKEN</div>
+            <div class="winner-name" id="winnerName"></div>
+            <p class="winner-caption" id="winnerCaption"></p>
+          </div>
+        </div>
+
+        <div class="stage-footer">
+          <p class="bowl-message" id="bowlMessage">Empty bowl, endless possibilities.</p>
+          <button class="primary-button" id="drawButton">
+            <svg class="icon"><use id="drawIcon" href="#i-plus"/></svg>
+            <span id="drawLabel">Add names to begin</span>
+          </button>
+          <div class="progress-row">
+            <span id="progressLabel">0 of 0 picked</span>
+            <span><svg class="icon"><use href="#i-check"/></svg> No repeats. Just good luck.</span>
+          </div>
+          <div class="progress-track" id="progressTrack" role="progressbar" aria-label="Round progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="roster-card" aria-labelledby="rosterTitle">
+        <div class="roster-heading">
+          <h2 id="rosterTitle">Who's in?</h2>
+          <span class="people-icon"><svg class="icon"><use href="#i-people"/></svg></span>
+        </div>
+        <p class="roster-subtitle">Every name gets an equal little chance.</p>
+
+        <form id="nameForm" autocomplete="off">
+          <div class="input-label">
+            <label for="nameInput">ADD YOUR PEOPLE</label>
+            <span>Enter ↵ to add</span>
+          </div>
+          <div class="input-row">
+            <textarea id="nameInput" rows="1" maxlength="4000" placeholder="Type a name, or paste a list…" aria-describedby="inputHint" spellcheck="false"></textarea>
+            <button class="add-button" type="submit" id="addButton" title="Add names" aria-label="Add names"><svg class="icon"><use href="#i-plus"/></svg></button>
+          </div>
+          <p class="input-hint" id="inputHint">Adding a few? Separate names with commas or new lines.</p>
+        </form>
+
+        <div class="tabs" role="tablist" aria-label="Name lists">
+          <button class="tab" id="remainingTab" role="tab" aria-selected="true" aria-controls="namesPanel" tabindex="0">In the bowl <span class="tab-count" id="remainingCount">0</span></button>
+          <button class="tab" id="pickedTab" role="tab" aria-selected="false" aria-controls="namesPanel" tabindex="-1">Picked <span class="tab-count" id="pickedCount">0</span></button>
+        </div>
+
+        <div class="names-panel" id="namesPanel" role="tabpanel" aria-labelledby="remainingTab" tabindex="0">
+          <ul class="name-list" id="nameList"></ul>
+          <div class="empty-state" id="emptyState">
+            <div class="empty-illustration"><svg class="icon"><use id="emptyIcon" href="#i-paper"/></svg></div>
+            <strong id="emptyTitle">Good company starts with a name.</strong>
+            <p id="emptyDescription">Add your friends, teammates, or anyone who deserves a little luck.</p>
+          </div>
+        </div>
+
+        <div class="roster-footer">
+          <button class="text-button" id="clearButton" disabled><svg class="icon"><use href="#i-trash"/></svg>Clear all</button>
+          <div class="footer-actions">
+            <button class="text-button sample-button" id="sampleButton">Try a sample bowl <svg class="icon"><use href="#i-arrow"/></svg></button>
+            <button class="text-button" id="copyButton" hidden><svg class="icon"><use href="#i-copy"/></svg>Copy picks</button>
+            <button class="text-button mobile-draw" id="goToBowl" hidden>Bowl <svg class="icon"><use href="#i-down"/></svg></button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="bottom-note">
+      <svg class="icon"><use href="#i-star"/></svg>
+      <span>Made for the “you decide” moments.</span>
+      <span class="divider">·</span>
+      <span class="privacy-text">Your names stay on this device.</span>
+    </div>
+  </main>
+</div>
+
+<dialog id="helpDialog" aria-labelledby="helpTitle">
+  <div class="dialog-top">
+    <h2 id="helpTitle">A little luck, in 3 steps.</h2>
+    <button class="icon-button" data-close="helpDialog" aria-label="Close instructions"><svg class="icon"><use href="#i-close"/></svg></button>
+  </div>
+  <ol class="instructions">
+    <li><span class="step-number">1</span><div><strong>Make your little guest list.</strong><p>Add names one at a time, or paste a comma-separated list. Each person gets one chit. Up to 60 names can join.</p></div></li>
+    <li><span class="step-number">2</span><div><strong>Give chance a chance.</strong><p>Tap the bowl or “Mix & pick a name.” The chits shuffle, and one name is chosen at random.</p></div></li>
+    <li><span class="step-number">3</span><div><strong>Keep the good luck going.</strong><p>Pick again to build your draw order. No one is picked twice in a round. Once the bowl is empty, refill it and play again!</p></div></li>
+  </ol>
+  <button class="primary-button" data-close="helpDialog">Got it. Let's get lucky! <svg class="icon"><use href="#i-star"/></svg></button>
+  <p class="dialog-footnote"><kbd>Enter</kbd> to add names &nbsp; · &nbsp; <kbd>Space</kbd> to draw<br>Everyone remaining has an equal chance on every draw.</p>
+</dialog>
+
+<dialog id="clearDialog" aria-labelledby="clearTitle">
+  <div class="dialog-top">
+    <h2 id="clearTitle">A fresh start?</h2>
+    <button class="icon-button" data-close="clearDialog" aria-label="Cancel clearing"><svg class="icon"><use href="#i-close"/></svg></button>
+  </div>
+  <p class="dialog-copy">This will empty your bowl and clear this round's draw order. A whole new set of possibilities awaits.</p>
+  <div class="confirm-actions">
+    <button class="secondary-button" data-close="clearDialog">Keep it</button>
+    <button class="primary-button" id="confirmClear">Yes, clear the bowl</button>
+  </div>
+</dialog>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="sr-only" id="announcement" aria-live="polite" aria-atomic="true"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = id => document.getElementById(id);
+  const NS = "http://www.w3.org/2000/svg";
+  const STORAGE_KEY = "chit-bowl-v1";
+  const MAX_NAMES = 60;
+  const MAX_LENGTH = 40;
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let people = [];
+  let picks = [];
+  let phase = "setup";
+  let activeTab = "remaining";
+  let soundOn = true;
+  let idCounter = 0;
+  let paperNodes = [];
+  let toastTimer;
+  let audioContext;
+  let masterGain;
+  let confettiFrame;
+
+  function load() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (!saved || !Array.isArray(saved.people)) return;
+      const seenIds = new Set();
+      const seenNames = new Set();
+      for (const p of saved.people.slice(0, MAX_NAMES)) {
+        if (!p || typeof p.name !== "string" || typeof p.id !== "string") continue;
+        const name = p.name.trim().slice(0, MAX_LENGTH);
+        const key = name.toLocaleLowerCase();
+        if (!name || seenIds.has(p.id) || seenNames.has(key)) continue;
+        people.push({ id: p.id, name });
+        seenIds.add(p.id);
+        seenNames.add(key);
+      }
+      picks = Array.isArray(saved.picks) ? [...new Set(saved.picks)].filter(id => seenIds.has(id)) : [];
+      if (typeof saved.soundOn === "boolean") soundOn = saved.soundOn;
+    } catch (_) {}
+    updatePhase();
+    if (phase === "finished") activeTab = "picked";
+  }
+
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ people, picks, soundOn })); } catch (_) {}
+  }
+
+  function remaining() {
+    const drawn = new Set(picks);
+    return people.filter(p => !drawn.has(p.id));
+  }
+
+  function updatePhase() {
+    phase = people.length && picks.length === people.length ? "finished" : picks.length ? "reveal" : "setup";
+  }
+
+  function icon(name) {
+    const svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("class", "icon");
+    svg.setAttribute("aria-hidden", "true");
+    const use = document.createElementNS(NS, "use");
+    use.setAttribute("href", "#i-" + name);
+    svg.appendChild(use);
+    return svg;
+  }
+
+  function notify(message) {
+    clearTimeout(toastTimer);
+    $("toast").textContent = message;
+    $("toast").classList.add("show");
+    toastTimer = setTimeout(() => $("toast").classList.remove("show"), 3400);
+  }
+
+  function announce(message) { $("announcement").textContent = message; }
+
+  function renderSound() {
+    $("soundIcon").setAttribute("href", soundOn ? "#i-sound" : "#i-mute");
+    $("soundButton").setAttribute("aria-pressed", String(soundOn));
+    $("soundButton").setAttribute("aria-label", soundOn ? "Turn sound off" : "Turn sound on");
+    $("soundButton").title = soundOn ? "Turn sound off" : "Turn sound on";
+  }
+
+  function render() {
+    const available = remaining();
+    const mixing = phase === "drawing";
+    const finished = phase === "finished";
+    const showingWinner = (phase === "reveal" || finished) && picks.length > 0;
+
+    $("stage").classList.toggle("is-mixing", mixing);
+    $("stage").classList.toggle("is-revealed", showingWinner);
+    $("stage").classList.toggle("is-finished", finished);
+    $("stageLabel").textContent = finished ? "THAT'S EVERYONE!" : mixing ? "A LITTLE SUSPENSE…" : "YOUR LUCKY BOWL";
+    $("bowlCount").textContent = finished ? "Round complete ✓" : `${available.length} ${available.length === 1 ? "chit" : "chits"} inside`;
+    $("remainingCount").textContent = available.length;
+    $("pickedCount").textContent = picks.length;
+    $("nameInput").disabled = mixing;
+    $("addButton").disabled = mixing;
+    $("clearButton").disabled = mixing || !people.length;
+    $("sampleButton").hidden = people.length > 0;
+    $("copyButton").hidden = !picks.length;
+    $("goToBowl").hidden = !people.length;
+    $("drawButton").disabled = mixing;
+    $("bowlTrigger").disabled = mixing;
+
+    let label, glyph, message;
+    if (mixing) {
+      label = "Mixing up a little magic…";
+      glyph = "shuffle";
+      message = "Round and round… who will it be?";
+    } else if (finished) {
+      label = "Refill & play again";
+      glyph = "repeat";
+      message = "Every name had its moment. Another round?";
+    } else if (!people.length) {
+      label = "Add names to begin";
+      glyph = "plus";
+      message = "Empty bowl, endless possibilities.";
+    } else if (picks.length) {
+      label = "Pick the next name";
+      glyph = "shuffle";
+      message = `${available.length} ${available.length === 1 ? "little possibility" : "little possibilities"} still in the bowl.`;
+    } else {
+      label = "Mix & pick a name";
+      glyph = "shuffle";
+      message = "The best decisions start with a little swirl.";
+    }
+    $("drawLabel").textContent = label;
+    $("drawIcon").setAttribute("href", "#i-" + glyph);
+    $("bowlMessage").textContent = message;
+    $("bowlTrigger").setAttribute("aria-label", label);
+    $("progressLabel").textContent = `${picks.length} of ${people.length} picked`;
+    const progress = people.length ? (picks.length / people.length) * 100 : 0;
+    $("progressFill").style.width = progress + "%";
+    $("progressTrack").setAttribute("aria-valuenow", String(Math.round(progress)));
+    $("progressTrack").setAttribute("aria-valuetext", `${picks.length} of ${people.length} names picked`);
+
+    $("winnerCard").hidden = !showingWinner;
+    if (showingWinner) {
+      const winner = people.find(p => p.id === picks[picks.length - 1]);
+      $("winnerName").textContent = winner ? winner.name : "";
+      $("winnerName").style.fontSize = winner && winner.name.length > 24 ? "25px" : "";
+      $("winnerEyebrow").textContent = finished ? "THE FINAL LITTLE PICK" : "THE BOWL HAS SPOKEN";
+      $("winnerCaption").textContent = `Lucky pick #${String(picks.length).padStart(2, "0")} · ${finished ? "That's the whole lovely lineup." : "Looks like luck knows your name."}`;
+    }
+
+    renderRoster();
+    renderChits(available);
+    renderSound();
+  }
+
+  function renderRoster() {
+    const isRemaining = activeTab === "remaining";
+    $("remainingTab").setAttribute("aria-selected", String(isRemaining));
+    $("pickedTab").setAttribute("aria-selected", String(!isRemaining));
+    $("remainingTab").tabIndex = isRemaining ? 0 : -1;
+    $("pickedTab").tabIndex = isRemaining ? -1 : 0;
+    $("namesPanel").setAttribute("aria-labelledby", isRemaining ? "remainingTab" : "pickedTab");
+
+    const displayed = isRemaining ? remaining() : picks.map(id => people.find(p => p.id === id)).filter(Boolean);
+    $("nameList").replaceChildren();
+    $("emptyState").hidden = displayed.length > 0;
+
+    if (!displayed.length) {
+      if (!isRemaining) {
+        $("emptyTitle").textContent = "A little suspense is part of the fun.";
+        $("emptyDescription").textContent = "Your lucky picks will appear here, in the order they were drawn.";
+        $("emptyIcon").setAttribute("href", "#i-star");
+      } else if (people.length) {
+        $("emptyTitle").textContent = "That's the whole lovely lineup.";
+        $("emptyDescription").textContent = "See your draw order in Picked, or refill the bowl for another round.";
+        $("emptyIcon").setAttribute("href", "#i-check");
+      } else {
+        $("emptyTitle").textContent = "Good company starts with a name.";
+        $("emptyDescription").textContent = "Add your friends, teammates, or anyone who deserves a little luck.";
+        $("emptyIcon").setAttribute("href", "#i-paper");
+      }
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+    displayed.forEach((person, index) => {
+      const row = document.createElement("li");
+      row.className = "name-row" + (isRemaining ? "" : " picked-row");
+      row.style.animationDelay = Math.min(index * 14, 120) + "ms";
+
+      const number = document.createElement("span");
+      number.className = "name-number";
+      number.textContent = String(index + 1).padStart(2, "0");
+      number.setAttribute("aria-label", isRemaining ? "Name " + (index + 1) : "Pick number " + (index + 1));
+
+      const name = document.createElement("span");
+      name.className = "person-name";
+      name.textContent = person.name;
+      name.title = person.name;
+      row.append(number, name);
+
+      if (isRemaining) {
+        const remove = document.createElement("button");
+        remove.className = "remove-button";
+        remove.setAttribute("aria-label", "Remove " + person.name);
+        remove.title = "Remove " + person.name;
+        remove.disabled = phase === "drawing";
+        remove.appendChild(icon("close"));
+        remove.addEventListener("click", () => {
+          if (phase === "drawing") return;
+          people = people.filter(p => p.id !== person.id);
+          updatePhase();
+          render();
+          save();
+          notify(person.name + " removed from the bowl.");
+        });
+        row.appendChild(remove);
+      } else {
+        const check = document.createElement("span");
+        check.className = "pick-check";
+        check.appendChild(icon("check"));
+        row.appendChild(check);
+      }
+      fragment.appendChild(row);
+    });
+    $("nameList").appendChild(fragment);
+  }
+
+  function hash(text) {
+    let value = 0;
+    for (let i = 0; i < text.length; i++) value = ((value << 5) - value + text.charCodeAt(i)) | 0;
+    return value >>> 0;
+  }
+
+  function renderChits(available) {
+    $("chits").replaceChildren();
+    paperNodes = [];
+    $("emptyBowlText").style.display = available.length || picks.length ? "none" : "";
+    const colors = ["#fffae7", "#f5d8b3", "#f7f0d3", "#dde9cb", "#ffefd8"];
+    const visible = available.slice(0, 32);
+
+    visible.forEach((person, i) => {
+      const seed = hash(person.id + person.name);
+      const x = 177 + (seed % 242);
+      const y = 183 + ((seed >>> 6) % 102);
+      const r = -40 + ((seed >>> 10) % 80);
+      const g = document.createElementNS(NS, "g");
+      g.setAttribute("transform", `translate(${x} ${y}) rotate(${r})`);
+      g.setAttribute("filter", "url(#paperShadow)");
+
+      const paper = document.createElementNS(NS, "path");
+      paper.setAttribute("d", "M-28-18H13L28-3V18H-28Z");
+      paper.setAttribute("fill", colors[i % colors.length]);
+      paper.setAttribute("stroke", "#b8b694");
+      paper.setAttribute("stroke-width", ".8");
+      paper.setAttribute("stroke-linejoin", "round");
+
+      const fold = document.createElementNS(NS, "path");
+      fold.setAttribute("d", "M13-18V-3H28");
+      fold.setAttribute("fill", "#d6ccaa");
+      fold.setAttribute("fill-opacity", ".6");
+      fold.setAttribute("stroke", "#b8b694");
+      fold.setAttribute("stroke-width", ".65");
+
+      const lines = document.createElementNS(NS, "path");
+      lines.setAttribute("d", "M-17-4H3M-17 3H12M-17 10H-3");
+      lines.setAttribute("fill", "none");
+      lines.setAttribute("stroke", "#92977d");
+      lines.setAttribute("stroke-width", "1.3");
+      lines.setAttribute("stroke-linecap", "round");
+      lines.setAttribute("opacity", ".55");
+
+      g.append(paper, fold, lines);
+      $("chits").appendChild(g);
+      paperNodes.push({ el: g, x, y, r });
+    });
+  }
+
+  function addNames(raw) {
+    if (phase === "drawing") return;
+    const submitted = raw.split(/[\n,;]+/).map(s => s.trim().replace(/\s+/g, " ")).filter(Boolean);
+    if (!submitted.length) {
+      notify("A name first, a little luck next.");
+      $("nameInput").focus();
+      return;
+    }
+
+    const known = new Set(people.map(p => p.name.toLocaleLowerCase()));
+    let added = 0, duplicates = 0, tooLong = 0, overLimit = 0;
+    for (const name of submitted) {
+      if (name.length > MAX_LENGTH) { tooLong++; continue; }
+      const key = name.toLocaleLowerCase();
+      if (known.has(key)) { duplicates++; continue; }
+      if (people.length >= MAX_NAMES) { overLimit++; continue; }
+      people.push({ id: Date.now().toString(36) + "-" + (++idCounter).toString(36), name });
+      known.add(key);
+      added++;
+    }
+
+    if (added) {
+      $("nameInput").value = "";
+      activeTab = "remaining";
+      updatePhase();
+      render();
+      save();
+      playSound("add");
+      $("namesPanel").scrollTop = $("namesPanel").scrollHeight;
+    }
+
+    const messages = [];
+    if (added) messages.push(`${added === 1 ? "One little chit" : added + " little chits"} added.`);
+    if (duplicates) messages.push(`${duplicates} duplicate ${duplicates === 1 ? "name" : "names"} skipped.`);
+    if (tooLong) messages.push(`Keep each name to ${MAX_LENGTH} characters.`);
+    if (overLimit) messages.push(`This bowl holds up to ${MAX_NAMES} names.`);
+    notify(messages.join(" "));
+    if (!added || !window.matchMedia("(max-width: 650px)").matches) $("nameInput").focus();
+  }
+
+  function randomIndex(max) {
+    if (window.crypto && window.crypto.getRandomValues) {
+      const buffer = new Uint32Array(1);
+      const ceiling = Math.floor(4294967296 / max) * max;
+      do { window.crypto.getRandomValues(buffer); } while (buffer[0] >= ceiling);
+      return buffer[0] % max;
+    }
+    return Math.floor(Math.random() * max);
+  }
+
+  function focusInput() {
+    $("nameInput").focus({ preventScroll: true });
+    $("nameInput").scrollIntoView({ behavior: reducedMotion.matches ? "auto" : "smooth", block: "center" });
+  }
+
+  function handleDraw() {
+    if (phase === "drawing") return;
+    if (!people.length) { focusInput(); return; }
+    if (phase === "finished") {
+      picks = [];
+      phase = "setup";
+      activeTab = "remaining";
+      render();
+      save();
+      playSound("add");
+      notify("Everyone's back in. A fresh round of possibilities!");
+      announce("The bowl is refilled. Ready for a new round.");
+      return;
+    }
+    draw();
+  }
+
+  function draw() {
+    const available = remaining();
+    if (!available.length || phase === "drawing") return;
+
+    const chosen = available[randomIndex(available.length)];
+    phase = "drawing";
+    render();
+    announce("Mixing the bowl. Who will it be?");
+    playSound("mix");
+
+    const start = performance.now();
+    const duration = reducedMotion.matches ? 450 : 1700;
+
+    function frame(now) {
+      const p = Math.min(1, (now - start) / duration);
+      if (!reducedMotion.matches) {
+        const blend = Math.sin(p * Math.PI);
+        paperNodes.forEach((paper, i) => {
+          const angle = i * 2.399 + p * Math.PI * 6;
+          const radius = 64 + (i % 4) * 24;
+          const orbitX = 300 + Math.cos(angle) * radius;
+          const orbitY = 230 + Math.sin(angle) * (31 + (i % 3) * 9);
+          const x = paper.x + (orbitX - paper.x) * blend;
+          const y = paper.y + (orbitY - paper.y) * blend;
+          const rotation = paper.r + Math.sin(angle + i) * 100 * blend;
+          paper.el.setAttribute("transform", `translate(${x.toFixed(2)} ${y.toFixed(2)}) rotate(${rotation.toFixed(2)})`);
+        });
+      }
+      if (p < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        picks.push(chosen.id);
+        updatePhase();
+        if (phase === "finished") activeTab = "picked";
+        render();
+        save();
+        playSound(phase === "finished" ? "finish" : "win");
+        celebrate();
+        if (activeTab === "picked") $("namesPanel").scrollTop = $("namesPanel").scrollHeight;
+        announce(`${chosen.name}! Lucky pick number ${picks.length}. ${phase === "finished" ? "Round complete. Everyone has been picked. Refill the bowl to play again." : remaining().length + " names remain in the bowl."}`);
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function ensureAudio() {
+    if (!soundOn) return false;
+    try {
+      if (!audioContext) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return false;
+        audioContext = new AudioContextClass();
+        masterGain = audioContext.createGain();
+        masterGain.gain.value = .28;
+        masterGain.connect(audioContext.destination);
+      }
+      if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
+      return true;
+    } catch (_) { return false; }
+  }
+
+  function tone(frequency, duration, delay, type = "sine", volume = .2) {
+    const time = audioContext.currentTime + delay;
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(frequency, time);
+    gain.gain.setValueAtTime(0, time);
+    gain.gain.linearRampToValueAtTime(volume, time + .012);
+    gain.gain.exponentialRampToValueAtTime(.0001, time + duration);
+    oscillator.connect(gain);
+    gain.connect(masterGain);
+    oscillator.start(time);
+    oscillator.stop(time + duration + .02);
+    oscillator.onended = () => { oscillator.disconnect(); gain.disconnect(); };
+  }
+
+  function playSound(kind) {
+    if (!ensureAudio()) return;
+    try {
+      if (kind === "add") {
+        tone(620, .12, 0, "sine", .18);
+        tone(830, .13, .045, "sine", .12);
+      } else if (kind === "mix") {
+        const count = reducedMotion.matches ? 2 : 7;
+        for (let i = 0; i < count; i++) tone(200 + (i % 3) * 65, .065, i * .2, "triangle", .12);
+      } else {
+        const notes = kind === "finish" ? [523.25, 659.25, 783.99, 1046.5, 1318.5] : [659.25, 783.99, 1046.5];
+        notes.forEach((note, i) => tone(note, .55, i * .085, "sine", .18));
+      }
+    } catch (_) {}
+  }
+
+  function celebrate() {
+    if (reducedMotion.matches) return;
+    const canvas = $("confetti");
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    cancelAnimationFrame(confettiFrame);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const bounds = $("winnerCard").getBoundingClientRect();
+    const originX = bounds.left + bounds.width / 2;
+    const originY = bounds.top + bounds.height / 2;
+    const colors = ["#c77a50", "#79986d", "#d2ad60", "#b8c79b", "#e6c6a5"];
+    const particles = Array.from({ length: phase === "finished" ? 100 : 64 }, () => ({
+      x: originX, y: originY,
+      vx: (Math.random() - .5) * 11,
+      vy: -3 - Math.random() * 9,
+      rotation: Math.random() * Math.PI,
+      spin: (Math.random() - .5) * .2,
+      size: 4 + Math.random() * 5,
+      color: colors[Math.floor(Math.random() * colors.length)]
+    }));
+
+    const started = performance.now();
+    let previous = started;
+    function animate(now) {
+      const elapsed = now - started;
+      const step = Math.min((now - previous) / 16.67, 2.5);
+      previous = now;
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach(p => {
+        p.x += p.vx * step;
+        p.y += p.vy * step;
+        p.vy += .13 * step;
+        p.vx *= Math.pow(.99, step);
+        p.rotation += p.spin * step;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation);
+        ctx.globalAlpha = Math.max(0, Math.min(1, (2800 - elapsed) / 800));
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size / 2, -p.size / 3, p.size, p.size * .6);
+        ctx.restore();
+      });
+      if (elapsed < 2800) confettiFrame = requestAnimationFrame(animate);
+      else ctx.clearRect(0, 0, width, height);
+    }
+    confettiFrame = requestAnimationFrame(animate);
+  }
+
+  function changeTab(tab) {
+    activeTab = tab;
+    renderRoster();
+    $("namesPanel").scrollTop = 0;
+  }
+
+  async function copyPicks() {
+    if (!picks.length) return;
+    const text = "Chit Bowl · Draw order\n\n" + picks.map((id, index) => `${index + 1}. ${people.find(p => p.id === id).name}`).join("\n") + `\n\n${picks.length} of ${people.length} picked. A fair pick, every time.`;
+    try {
+      if (!navigator.clipboard) throw new Error("Clipboard unavailable");
+      await navigator.clipboard.writeText(text);
+      notify("Draw order copied. Spread the good luck!");
+    } catch (_) {
+      const field = document.createElement("textarea");
+      field.value = text;
+      field.style.position = "fixed";
+      field.style.left = "-9999px";
+      document.body.appendChild(field);
+      field.select();
+      let copied = false;
+      try { copied = document.execCommand("copy"); } catch (_) {}
+      field.remove();
+      $("copyButton").focus();
+      notify(copied ? "Draw order copied. Spread the good luck!" : "Copy isn't available in this browser. Your picks are saved here.");
+    }
+  }
+
+  $("nameForm").addEventListener("submit", event => {
+    event.preventDefault();
+    addNames($("nameInput").value);
+  });
+
+  $("nameInput").addEventListener("keydown", event => {
+    if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
+      event.preventDefault();
+      addNames($("nameInput").value);
+    }
+  });
+
+  $("drawButton").addEventListener("click", handleDraw);
+  $("bowlTrigger").addEventListener("click", handleDraw);
+  $("remainingTab").addEventListener("click", () => changeTab("remaining"));
+  $("pickedTab").addEventListener("click", () => changeTab("picked"));
+
+  [$("remainingTab"), $("pickedTab")].forEach(button => {
+    button.addEventListener("keydown", event => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+      const next = event.key === "Home" ? "remaining" : event.key === "End" ? "picked" : activeTab === "remaining" ? "picked" : "remaining";
+      changeTab(next);
+      $(next === "remaining" ? "remainingTab" : "pickedTab").focus();
+    });
+  });
+
+  $("sampleButton").addEventListener("click", () => addNames("Alex, Jordan, Taylor, Casey, Morgan, Riley"));
+
+  $("goToBowl").addEventListener("click", () => {
+    $("stage").scrollIntoView({ behavior: reducedMotion.matches ? "auto" : "smooth", block: "start" });
+    $("drawButton").focus({ preventScroll: true });
+  });
+
+  $("soundButton").addEventListener("click", () => {
+    soundOn = !soundOn;
+    if (masterGain && audioContext) masterGain.gain.setTargetAtTime(soundOn ? .28 : 0, audioContext.currentTime, .015);
+    renderSound();
+    save();
+    if (soundOn) playSound("add");
+    notify(soundOn ? "A little sound, a little more magic." : "Quiet luck. Sound is off.");
+  });
+
+  $("helpButton").addEventListener("click", () => $("helpDialog").showModal());
+  $("clearButton").addEventListener("click", () => {
+    if (phase !== "drawing" && people.length) $("clearDialog").showModal();
+  });
+
+  document.querySelectorAll("[data-close]").forEach(button => {
+    button.addEventListener("click", () => $(button.dataset.close).close());
+  });
+
+  document.querySelectorAll("dialog").forEach(dialog => {
+    dialog.addEventListener("click", event => {
+      if (event.target !== dialog) return;
+      const box = dialog.getBoundingClientRect();
+      if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) dialog.close();
+    });
+  });
+
+  $("confirmClear").addEventListener("click", () => {
+    if (phase === "drawing") return;
+    people = [];
+    picks = [];
+    phase = "setup";
+    activeTab = "remaining";
+    $("nameInput").value = "";
+    $("clearDialog").close();
+    render();
+    save();
+    focusInput();
+    notify("A fresh bowl. A whole new set of possibilities.");
+  });
+
+  $("copyButton").addEventListener("click", copyPicks);
+
+  document.addEventListener("keydown", event => {
+    if (event.code !== "Space" || event.repeat || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (document.querySelector("dialog[open]")) return;
+    const target = event.target;
+    if (target.closest("button, input, textarea, select, [contenteditable='true']")) return;
+    event.preventDefault();
+    handleDraw();
+  });
+
+  load();
+  render();
+})();
+</script>
+</body>
+</html>
